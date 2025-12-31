@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{{ project_name }} - 任务进度报告</title>
+    <style>
+        .summary-table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+        .summary-table th, .summary-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        .summary-table th { background-color: #f2f2f2; }
+        .status-completed { color: green; font-weight: bold; }
+        .status-in-progress { color: orange; }
+        .status-not-started { color: red; }
+        .priority-high { background-color: #ffebee; }
+    </style>
+</head>
+<body>
+    <h1>{{ project_name }} 任务进度报告</h1>
+    <p>报告生成日期：{{ report_date }}</p>
+    <p>负责人：{{ project_manager }}</p>
+
+    <!-- 任务汇总统计 -->
+    <h2>一、任务汇总</h2>
+    <p>总任务数：{{ task_list|length }} | 已完成：{{ completed_tasks|length }} | 进行中：{{ in_progress_tasks|length }} | 未开始：{{ not_started_tasks|length }}</p>
+
+    <!-- 任务详情总表 -->
+    <h2>二、任务详情表</h2>
+    <table class="summary-table">
+        <tr>
+            <th>Task ID</th>
+            <th>任务名称</th>
+            <th>负责人</th>
+            <th>状态</th>
+            <th>截止日期</th>
+            <th>优先级</th>
+        </tr>
+        {% for task in task_list %}
+        <tr class="{% if task.priority == 'High' %}priority-high{% endif %}">
+            <td>{{ task.task_id }}</td>
+            <td>{{ task.task_name }}</td>
+            <td>{{ task.assignee }}</td>
+            <td class="{% if task.status == 'Completed' %}status-completed{% elif task.status == 'In Progress' %}status-in-progress{% else %}status-not-started{% endif %}">
+                {{ task.status }}
+            </td>
+            <td>{{ task.due_date|default(task.due_date) }}</td>
+            <td>{{ task.priority }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <!-- 按状态分组展示 -->
+    <h2>三、按状态分类</h2>
+    
+    <!-- 已完成任务 -->
+    <h3>3.1 已完成任务</h3>
+    {% if completed_tasks %}
+    <ul>
+        {% for task in completed_tasks %}
+        <li>{{ task.task_id }} - {{ task.task_name }}（负责人：{{ task.assignee }}，完成日期：{{ task.completed_date|default('待补充') }}）</li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>暂无已完成任务</p>
+    {% endif %}
+
+    <!-- 进行中任务 -->
+    <h3>3.2 进行中任务</h3>
+    {% if in_progress_tasks %}
+    <ul>
+        {% for task in in_progress_tasks %}
+        <li>{{ task.task_id }} - {{ task.task_name }}（负责人：{{ task.assignee }}，截止日期：{{ task.due_date }}）</li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>暂无进行中任务</p>
+    {% endif %}
+
+    <!-- 高优先级未开始任务（重点提醒） -->
+    <h3>3.3 高优先级未开始任务（需关注）</h3>
+    {% if task_list %}
+    <ul>
+        {% for task in task_list %}
+            {% if task.status == 'Not Started' and task.priority == 'High' %}
+        <li>{{ task.task_id }} - {{ task.task_name }}（负责人：{{ task.assignee }}，截止日期：{{ task.due_date }}）</li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>暂无高优先级未开始任务</p>
+    {% endif %}
+
+    <h2>四、负责人任务分配</h2>
+    {% for assignee, tasks in tasks_by_assignee.items() %}
+    <h3>4.1 {{ assignee }}</h3>
+    <table class="summary-table">
+        <tr>
+            <th>Task ID</th>
+            <th>任务名称</th>
+            <th>状态</th>
+            <th>优先级</th>
+        </tr>
+        {% for task in tasks %}
+        <tr>
+            <td>{{ task.task_id }}</td>
+            <td>{{ task.task_name }}</td>
+            <td>{{ task.status }}</td>
+            <td>{{ task.priority }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endfor %}
+</body>
+</html>

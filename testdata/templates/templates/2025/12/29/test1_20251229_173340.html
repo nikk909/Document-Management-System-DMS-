@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商店产品报告</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', 'SimSun', Arial, sans-serif;
+            font-size: 12pt;
+            line-height: 1.6;
+            margin: 40px;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #34495e;
+            border-left: 4px solid #3498db;
+            padding-left: 10px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        h3 {
+            color: #555;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        .info-section {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .info-item {
+            margin: 5px 0;
+        }
+        .product-section {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .product-header {
+            background-color: #3498db;
+            color: white;
+            padding: 10px;
+            border-radius: 3px;
+            margin-bottom: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 11pt;
+        }
+        table th {
+            background-color: #3498db;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: bold;
+        }
+        table td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        table tr:hover {
+            background-color: #e8f4f8;
+        }
+        .feature-list {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .feature-item {
+            margin: 5px 0;
+        }
+        .variant-item {
+            display: inline-block;
+            margin: 5px 10px 5px 0;
+            padding: 5px 10px;
+            background-color: #ecf0f1;
+            border-radius: 3px;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            color: #777;
+            font-size: 10pt;
+        }
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 10pt;
+            font-weight: bold;
+        }
+        .badge-in-stock {
+            background-color: #27ae60;
+            color: white;
+        }
+        .badge-out-of-stock {
+            background-color: #e74c3c;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    {# 在模板中使用Jinja2处理JSON数据 #}
+    {# HTML导出器会将原始JSON数据展开到模板变量中，所以可以直接使用store、title等 #}
+    {% set store_data = store if store is defined else {} %}
+    {% set project_name = title or store_data.get('name', '商店') %}
+    {% set report_date = now.strftime('%Y-%m-%d') %}
+    
+    <h1>{{ project_name }} - 产品目录报告</h1>
+    
+    <div class="info-section">
+        <div class="info-item"><strong>商店名称：</strong>{{ store_data.get('name', 'N/A') }}</div>
+        <div class="info-item"><strong>地址：</strong>{{ store_data.get('location', 'N/A') }}</div>
+        <div class="info-item"><strong>联系电话：</strong>{{ store_data.get('contact', {}).get('phone', 'N/A') }}</div>
+        <div class="info-item"><strong>邮箱：</strong>{{ store_data.get('contact', {}).get('email', 'N/A') }}</div>
+        <div class="info-item"><strong>报告日期：</strong>{{ report_date }}</div>
+    </div>
+    
+    <h2>一、产品概览</h2>
+    {% set products = store_data.get('products', []) %}
+    {% set total_products = products|length %}
+    {% set in_stock_count = products|selectattr('inStock', 'equalto', true)|list|length %}
+    {% set out_of_stock_count = total_products - in_stock_count %}
+    
+    <div class="info-section">
+        <div class="info-item"><strong>产品总数：</strong>{{ total_products }} 个</div>
+        <div class="info-item"><strong>有库存：</strong>{{ in_stock_count }} 个</div>
+        <div class="info-item"><strong>缺货：</strong>{{ out_of_stock_count }} 个</div>
+    </div>
+    
+    <h2>二、产品详细列表</h2>
+    {% if products|length > 0 %}
+        {% for product in products %}
+        <div class="product-section">
+            <div class="product-header">
+                <h3 style="margin: 0; color: white;">
+                    {{ product.get('id', 'N/A') }} - {{ product.get('name', 'N/A') }}
+                    {% if product.get('inStock') %}
+                        <span class="badge badge-in-stock">有库存</span>
+                    {% else %}
+                        <span class="badge badge-out-of-stock">缺货</span>
+                    {% endif %}
+                </h3>
+            </div>
+            
+            <div style="margin: 10px 0;">
+                <strong>分类：</strong>{{ product.get('category', 'N/A') }} | 
+                <strong>价格：</strong>{{ product.get('price', 0) }} {{ product.get('currency', 'USD') }} | 
+                <strong>评分：</strong>{{ product.get('ratings', {}).get('average', 0) }} ({{ product.get('ratings', {}).get('totalReviews', 0) }} 条评价)
+            </div>
+            
+            {% set details = product.get('details', {}) %}
+            {% if details %}
+            <div style="margin: 10px 0;">
+                <h4>产品详情：</h4>
+                <ul>
+                    {% if details.get('color') %}
+                        <li><strong>颜色：</strong>{{ details.get('color') }}</li>
+                    {% endif %}
+                    {% if details.get('material') %}
+                        <li><strong>材质：</strong>{{ details.get('material') }}</li>
+                    {% endif %}
+                    {% set dimensions = details.get('dimensions', {}) %}
+                    {% if dimensions %}
+                        <li><strong>尺寸：</strong>
+                            {% if dimensions.get('length') %}长: {{ dimensions.get('length') }}{% endif %}
+                            {% if dimensions.get('width') %} × 宽: {{ dimensions.get('width') }}{% endif %}
+                            {% if dimensions.get('height') %} × 高: {{ dimensions.get('height') }}{% endif %}
+                        </li>
+                    {% endif %}
+                    {% if details.get('weight') %}
+                        <li><strong>重量：</strong>{{ details.get('weight') }}</li>
+                    {% endif %}
+                </ul>
+            </div>
+            {% endif %}
+            
+            {% set features = details.get('features', []) if details else [] %}
+            {% if features|length > 0 %}
+            <div style="margin: 10px 0;">
+                <h4>产品特性：</h4>
+                <ul class="feature-list">
+                    {% for feature in features %}
+                    <li class="feature-item">{{ feature }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+            
+            {% set variants = product.get('variants', []) %}
+            {% if variants|length > 0 %}
+            <div style="margin: 10px 0;">
+                <h4>可选规格：</h4>
+                {% for variant in variants %}
+                <span class="variant-item">
+                    {{ variant.get('color', 'N/A') }} - {{ variant.get('price', 0) }} {{ product.get('currency', 'USD') }}
+                </span>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            {% set shipping = product.get('shipping', {}) %}
+            {% if shipping %}
+            <div style="margin: 10px 0;">
+                <h4>配送信息：</h4>
+                <ul>
+                    {% if shipping.get('standard') %}
+                        <li><strong>标准配送：</strong>{{ shipping.get('standard', {}).get('cost', 0) }} {{ product.get('currency', 'USD') }} - {{ shipping.get('standard', {}).get('deliveryTime', 'N/A') }}</li>
+                    {% endif %}
+                    {% if shipping.get('express') %}
+                        <li><strong>快递配送：</strong>{{ shipping.get('express', {}).get('cost', 0) }} {{ product.get('currency', 'USD') }} - {{ shipping.get('express', {}).get('deliveryTime', 'N/A') }}</li>
+                    {% endif %}
+                </ul>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    {% else %}
+        <p>暂无产品信息</p>
+    {% endif %}
+    
+    <h2>三、产品汇总表</h2>
+    {% if products|length > 0 %}
+    <table border="1" cellpadding="5" cellspacing="0" style="border-collapse: collapse; width: 100%;">
+        <thead>
+            <tr>
+                <th>产品ID</th>
+                <th>产品名称</th>
+                <th>分类</th>
+                <th>价格</th>
+                <th>评分</th>
+                <th>库存状态</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+            <tr>
+                <td>{{ product.get('id', 'N/A') }}</td>
+                <td>{{ product.get('name', 'N/A') }}</td>
+                <td>{{ product.get('category', 'N/A') }}</td>
+                <td>{{ product.get('price', 0) }} {{ product.get('currency', 'USD') }}</td>
+                <td>{{ product.get('ratings', {}).get('average', 0) }} ({{ product.get('ratings', {}).get('totalReviews', 0) }} 评价)</td>
+                <td>
+                    {% if product.get('inStock') %}
+                        <span class="badge badge-in-stock">有库存</span>
+                    {% else %}
+                        <span class="badge badge-out-of-stock">缺货</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p>暂无产品信息</p>
+    {% endif %}
+    
+    <div class="footer">
+        <p>报告生成时间：{{ report_date }}</p>
+        <p>数据来源：{{ project_name }}</p>
+    </div>
+</body>
+</html>
+

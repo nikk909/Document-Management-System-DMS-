@@ -1,0 +1,31 @@
+{
+  "document": {
+    "title": "月度报表",
+    "date": "2024-05-31"
+  },
+  "table_data": [
+    {"部门": "销售", "销售额": 120000, "增长率": 0.12},
+    {"部门": "研发", "销售额": 90000, "增长率": 0.08},
+    {"部门": "运营", "销售额": 60000, "增长率": 0.05}
+  ],
+  "table_merge": {
+    "merge_rows": [
+      {"start_row": 0, "end_row": 1, "start_col": 0, "end_col": 0}
+    ]
+  },
+  "chart_data": {
+    "type": "line",
+    "title": "本月销售趋势",
+    "x_label": "周次",
+    "y_label": "销售额",
+    "series": [
+      {"name": "销售额", "points": [20000, 25000, 23000, 27000, 30000, 32000, 31000]}
+    ],
+    "labels": ["W1", "W2", "W3", "W4", "W5", "W6", "W7"]
+  },
+  "images": [
+    {"src": "base64:iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==", "alt": "签名", "width": 200, "height": 50},
+    {"src": "/image/images.jpg", "alt": "公司徽标", "width": 100, "height": 40}
+  ]
+}
+

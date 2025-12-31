@@ -1,0 +1,50 @@
+# 用户配置文件
+# 注意：此文件包含敏感信息，请勿提交到版本控制系统
+
+users:
+  - username: admin
+    password: admin
+    role: admin
+    department: all
+    display_name: 系统管理员
+  
+  - username: li
+    password: li
+    role: user
+    department: finance
+    display_name: 李（财务部）
+  
+  - username: ma
+    password: ma
+    role: user
+    department: it
+    display_name: 马（技术部）
+  
+  - username: su
+    password: su
+    role: user
+    department: it
+    display_name: 苏（技术部）
+
+roles:
+  admin:
+    description: 系统管理员
+    permissions:
+      - upload
+      - download
+      - modify
+      - delete
+      - view_history
+      - view_logs
+      - manage_permissions
+      - generate_document
+  
+  user:
+    description: 普通部门用户
+    permissions:
+      - upload
+      - download
+      - modify
+      - delete
+      - generate_document
+

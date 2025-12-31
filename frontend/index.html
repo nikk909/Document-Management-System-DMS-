@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文件管理系统</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- 登录界面 -->
+    <div id="loginPage" class="login-page">
+        <div class="login-container">
+            <h1>文件管理系统</h1>
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="username">用户名：</label>
+                    <input type="text" id="username" name="username" autocomplete="username" required placeholder="请输入用户名">
+                </div>
+                <div class="form-group">
+                    <label for="password">密码：</label>
+                    <input type="password" id="password" name="password" autocomplete="current-password" required placeholder="请输入密码">
+                </div>
+                <button type="submit" class="btn btn-primary">登录</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 主界面 -->
+    <div id="mainPage" class="main-page" style="display: none;">
+        <!-- 顶部导航栏 -->
+        <header class="header">
+            <div class="header-left">
+                <h2>文件管理系统</h2>
+                <button class="refresh-btn" id="refreshFilesBtn" title="单击：刷新页面">
+                    <span class="refresh-icon">🔄</span>
+                </button>
+            </div>
+            <div class="header-right">
+                <div class="user-info" id="userInfo">
+                    <button class="btn btn-small btn-danger" id="clearAllDataBtn" title="清空所有数据（文件、模板、生成的文档、日志）" style="margin-right: 10px;">一键清空所有</button>
+                    <span id="usernameDisplay">用户名</span>
+                    <button class="btn btn-small btn-secondary" id="logoutBtn">退出重登</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- 标签页导航栏 -->
+        <div class="tab-navigation">
+            <button class="tab-btn active" data-tab="fileManagement">文件管理</button>
+            <button class="tab-btn" data-tab="templateManagement">模板管理</button>
+            <button class="tab-btn" data-tab="imageManagement">图片管理</button>
+            <button class="tab-btn" data-tab="documentGeneration">文档生成</button>
+            <button class="tab-btn" data-tab="generatedDocuments">生成的文档</button>
+            <button class="tab-btn" data-tab="accessLog">访问日志</button>
+            <button class="tab-btn" data-tab="categoryManagement">分类管理</button>
+            <button class="tab-btn" data-tab="userManagement" id="userManagementTabBtn" style="display: none;">用户管理</button>
+        </div>
+
+        <!-- 文件管理标签页 -->
+        <div id="fileManagementTab" class="tab-content active">
+            <!-- 筛选栏 -->
+            <div class="template-filter-bar">
+                <select id="categoryFilter" class="filter-select">
+                    <option value="">全部</option>
+                </select>
+                <input type="text" id="keywordSearch" class="filter-input" placeholder="名称模糊查找">
+            </div>
+
+            <!-- 主内容区 -->
+            <div class="main-content">
+                <!-- 左侧文件列表 -->
+                <div class="file-list-panel">
+                    <div class="panel-header">
+                        <h3>文件列表</h3>
+                        <div class="header-actions">
+                            <button class="btn btn-small btn-danger" id="clearFilesBtn">一键清空</button>
+                        </div>
+                    </div>
+                    <div class="file-list" id="fileList">
+                        <!-- 文件列表项将通过 JavaScript 动态生成 -->
+                    </div>
+                    <div class="pagination" id="pagination">
+                        <!-- 翻页按钮将通过 JavaScript 动态生成 -->
+                    </div>
+                </div>
+
+                <!-- 右侧操作区 -->
+                <div class="operation-panel">
+                    <!-- 文件上传区域 -->
+                    <div class="panel-section">
+                        <div class="panel-header">
+                            <h3>文件上传</h3>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <label>选择分类：</label>
+                            <select id="uploadCategory" class="form-input">
+                                <option value="">请选择分类</option>
+                            </select>
+                        </div>
+                        <div class="upload-area" id="uploadArea">
+                            <div class="upload-placeholder">
+                                <p>拖到区域可以上传文件</p>
+                                <p class="upload-hint">或点击选择文件</p>
+                                <input type="file" id="fileInput" multiple style="display: none;">
+                            </div>
+                        </div>
+                        <!-- 上传提示 -->
+                        <div class="upload-info" id="uploadInfo" style="display: none;">
+                            <h4>上传成功</h4>
+                            <div class="info-item">
+                                <strong>MinIO 桶名：</strong>
+                                <span id="minioBucket">-</span>
+                            </div>
+                            <div class="info-item">
+                                <strong>MinIO 路径：</strong>
+                                <span id="minioPath">-</span>
+                            </div>
+                            <div class="info-item">
+                                <strong>MySQL 表名：</strong>
+                                <span id="mysqlTable">-</span>
+                            </div>
+                            <div class="info-item">
+                                <strong>MySQL 数据库：</strong>
+                                <span id="mysqlDatabase">-</span>
+                            </div>
+                            <div class="info-item">
+                                <strong>MySQL 记录ID：</strong>
+                                <span id="mysqlId">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 文件详情面板 -->
+                    <div class="panel-section" id="fileDetailPanel" style="display: none;">
+                        <div class="panel-header">
+                            <h3>文件详情</h3>
+                        </div>
+                        <div class="detail-content" id="fileDetailContent">
+                            <!-- 文件详情将通过 JavaScript 动态生成 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 模板管理标签页 -->
+        <div id="templateManagementTab" class="tab-content">
+            <div class="main-content">
+                <!-- 左侧模板列表 -->
+                <div class="file-list-panel">
+                    <div class="panel-header">
+                        <h3>模板列表</h3>
+                        <div class="header-actions">
+                            <button class="btn btn-small btn-danger" id="clearTemplatesBtn">一键清空</button>
+                        </div>
+                    </div>
+                    <div class="template-filter-bar">
+                        <select id="templateCategoryFilter" class="filter-select">
+                            <option value="">全部分类</option>
+                        </select>
+                        <input type="text" id="templateSearch" class="filter-input" placeholder="搜索模板名称">
+                    </div>
+                    <div class="file-list" id="templateList">
+                        <!-- 模板列表项将通过 JavaScript 动态生成 -->
+                    </div>
+                    <div class="pagination" id="templatePagination">
+                        <!-- 翻页按钮将通过 JavaScript 动态生成 -->
+                    </div>
+                </div>
+
+                <!-- 右侧模板操作区 -->
+                <div class="operation-panel">
+                    <!-- 模板上传区域 -->
+                    <div class="panel-section" id="templateUploadSection">
+                        <div class="panel-header">
+                            <h3>模板上传</h3>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <label>选择分类：</label>
+                            <select id="templateUploadCategory" class="form-input">
+                                <option value="">请选择分类</option>
+                            </select>
+                        </div>
+                        <div class="upload-area" id="templateUploadArea">
+                            <div class="upload-placeholder">
+                                <p>拖到区域可以上传模板文件</p>
+                                <p class="upload-hint">或点击选择文件</p>
+                                <input type="file" id="templateFileInput" accept=".docx,.pdf,.html,.htm" multiple style="display: none;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 模板详情区域 -->
+                    <div class="panel-section" id="templateDetailSection" style="display: none;">
+                        <div class="panel-header">
+                            <h3>模板详情</h3>
+                        </div>
+                        <div class="detail-content" id="templateDetailContent">
+                            <!-- 模板详情将通过 JavaScript 动态生成 -->
+                        </div>
+                        <!-- 占位符管理 -->
+                        <div class="placeholder-management" id="placeholderManagement" style="display: none;">
+                            <h4>占位符列表</h4>
+                            <div id="placeholderList">
+                                <!-- 占位符列表将通过 JavaScript 动态生成 -->
+                            </div>
+                        </div>
+                        <!-- 版本历史 -->
+                        <div class="version-history" id="versionHistory" style="display: none;">
+                            <h4>版本历史</h4>
+                            <div id="versionHistoryList">
+                                <!-- 版本历史列表将通过 JavaScript 动态生成 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 文档生成标签页 -->
+        <div id="documentGenerationTab" class="tab-content">
+            <div class="main-content" style="display: flex; flex-direction: column; height: 100%;">
+                <div class="generation-panel" style="flex: 1; overflow: hidden; padding: 0;">
+                    <div class="panel-section" style="height: 100%; padding: 0;">
+                        <!-- 文档生成全屏响应式布局 -->
+                        <div class="document-generation-container">
+                            <!-- 上半区：左侧（步骤1和2）和右侧（步骤3） -->
+                            <div class="generation-top-section">
+                                <!-- 左侧：步骤1和步骤2上下排列 -->
+                                <div class="generation-left-column">
+                                    <!-- 步骤1：选择数据文件 -->
+                                    <div class="generation-step-card" id="step1" data-step="1">
+                                        <div class="step-header">
+                                            <div class="step-indicator">
+                                                <span class="step-number">1</span>
+                                                <span class="step-dot"></span>
+                                            </div>
+                                            <h4 class="step-title">选择数据文件</h4>
+                                        </div>
+                                        <div class="step-content">
+                                            <div class="step-input-group">
+                                                <select id="dataFileSelect" class="step-select">
+                                                    <option value="">请选择文件...</option>
+                                                </select>
+                                                <button class="btn-refresh" id="refreshDataFileListBtn" title="刷新文件列表">
+                                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M8 2V6M8 14V10M2 8H6M14 8H10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                                        <path d="M2.5 5.5C3.2 3.8 4.8 2.5 6.5 2.5M13.5 10.5C12.8 12.2 11.2 13.5 9.5 13.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 步骤2：选择模板 -->
+                                    <div class="generation-step-card" id="step2" data-step="2">
+                                        <div class="step-header">
+                                            <div class="step-indicator">
+                                                <span class="step-number">2</span>
+                                                <span class="step-dot"></span>
+                                            </div>
+                                            <h4 class="step-title">选择模板</h4>
+                                        </div>
+                                        <div class="step-content">
+                                            <div id="templateRecommendation" class="step-hint" style="display: none;"></div>
+                                            <select id="generationTemplateSelect" class="step-select">
+                                                <option value="">请选择模板</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 右侧：步骤3生成配置 -->
+                                <div class="generation-right-column">
+                                    <div class="generation-step-card" id="step3" data-step="3">
+                                <div class="step-header">
+                                    <div class="step-indicator">
+                                        <span class="step-number">3</span>
+                                        <span class="step-dot"></span>
+                                    </div>
+                                    <h4 class="step-title">生成配置</h4>
+                                </div>
+                                <div class="step-content step-config-grid">
+                                    <!-- 输出格式（默认只选Word） -->
+                                    <div class="config-section">
+                                        <label class="config-label">输出格式</label>
+                                        <div class="format-tags">
+                                            <label class="format-tag format-tag-pdf" data-format="pdf">
+                                                <input type="checkbox" name="outputFormat" value="pdf">
+                                                <span>PDF</span>
+                                            </label>
+                                            <label class="format-tag format-tag-word checked" data-format="word">
+                                                <input type="checkbox" name="outputFormat" value="word" checked>
+                                                <span>Word</span>
+                                            </label>
+                                            <label class="format-tag format-tag-html" data-format="html">
+                                                <input type="checkbox" name="outputFormat" value="html">
+                                                <span>HTML</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 动态元素 -->
+                                    <div class="config-section">
+                                        <label class="config-label">动态元素</label>
+                                        <div class="checkbox-group">
+                                            <label class="checkbox-item">
+                                                <input type="checkbox" id="enableChart" checked>
+                                                <span class="checkbox-custom"></span>
+                                                <span class="checkbox-label">生成图表</span>
+                                            </label>
+                                            <p class="config-hint">表格/图片自动生成</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 安全设置 -->
+                                    <div class="config-section">
+                                        <label class="config-label">安全设置</label>
+                                        <div class="checkbox-group">
+                                            <label class="checkbox-item">
+                                                <input type="checkbox" id="genEnableEncryption">
+                                                <span class="checkbox-custom"></span>
+                                                <span class="checkbox-label">PDF加密</span>
+                                            </label>
+                                            <div id="pdfPasswordContainer" style="display: none; margin-top: 8px; width: 100%;">
+                                                <input type="password" id="genPdfPassword" class="step-input" placeholder="PDF密码" style="width: 100%;">
+                                            </div>
+                                            <label class="checkbox-item">
+                                                <input type="checkbox" id="genEnableWatermark">
+                                                <span class="checkbox-custom"></span>
+                                                <span class="checkbox-label">水印</span>
+                                            </label>
+                                            <div id="watermarkConfig" style="display: none; margin-top: 8px; margin-left: 24px; width: calc(100% - 24px);">
+                                                <input type="text" id="genWatermarkText" class="step-input" placeholder="水印文本（留空使用默认文本）" style="width: 100%; margin-bottom: 8px;">
+                                                <select id="watermarkImageSelect" class="step-input" style="width: 100%;">
+                                                    <option value="">选择水印图片（可选）</option>
+                                                </select>
+                                                <button type="button" class="btn btn-small" onclick="loadWatermarkImages()" style="margin-top: 5px; width: 100%;">刷新图片列表</button>
+                                                <p class="config-hint" style="font-size: 12px; color: #666; margin-top: 5px;">如果选择图片，将使用图片作为水印；否则使用文本水印</p>
+                                            </div>
+                                            <label class="checkbox-item" style="position: relative; display: flex; align-items: center; width: 100%;">
+                                                <input type="checkbox" id="genEnableMasking">
+                                                <span class="checkbox-custom"></span>
+                                                <span class="checkbox-label">脱敏</span>
+                                                <span class="info-icon" style="position: absolute; right: 0; cursor: help; color: #999; font-size: 14px; width: 16px; height: 16px; border-radius: 50%; border: 1px solid #999; display: inline-flex; align-items: center; justify-content: center; line-height: 1; margin-left: 8px;" title="系统将自动识别并脱敏以下格式的数据：&#10;• 身份证号（18位数字）&#10;• 手机号（11位数字）&#10;• 银行卡号（16-19位数字）&#10;• 邮箱地址&#10;• 姓名（如果字段名包含'姓名'、'名字'等）">ℹ</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 步骤4：生成文档（下方通栏） -->
+                            <div class="generation-step-card generation-step-full" id="step4" data-step="4">
+                                <div class="step-header">
+                                    <div class="step-indicator">
+                                        <span class="step-number">4</span>
+                                        <span class="step-dot"></span>
+                                    </div>
+                                    <h4 class="step-title">生成文档</h4>
+                                </div>
+                                <div class="step-content step-generate">
+                                    <button class="btn-generate" id="generateDocumentBtn">
+                                        <span>开始生成</span>
+                                    </button>
+                                    <div class="generation-progress" id="generationProgress" style="display: none;">
+                                        <div class="progress-bar">
+                                            <div class="progress-fill" id="progressFill"></div>
+                                        </div>
+                                        <p id="progressText" class="progress-text">准备中...</p>
+                                    </div>
+                                    <div class="generation-result" id="generationResult" style="display: none;">
+                                        <h5 class="result-title">生成结果</h5>
+                                        <div id="generationResultContent" class="result-content"></div>
+                                        <div style="display: flex; gap: 10px; margin-top: 15px;">
+                                            <button class="btn btn-primary" id="resetGenerationBtn">继续生成</button>
+                                        <button class="btn-download" id="downloadResultBtn">下载文档</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 生成的文档标签页 -->
+        <!-- 图片管理标签页 -->
+        <div id="imageManagementTab" class="tab-content">
+            <div class="main-content">
+                <!-- 左侧图片列表 -->
+                <div class="file-list-panel">
+                    <div class="panel-header">
+                        <h3>图片列表</h3>
+                        <div class="header-actions">
+                            <button class="btn btn-primary" id="refreshImagesBtn">刷新</button>
+                        </div>
+                    </div>
+                    <div class="template-filter-bar">
+                        <input type="text" id="imageKeywordSearch" class="filter-input" placeholder="文件名模糊查找">
+                    </div>
+                    <div class="image-list" id="imageList">
+                        <!-- 图片列表项将通过 JavaScript 动态生成 -->
+                    </div>
+                    <div class="pagination" id="imagePagination">
+                        <!-- 翻页按钮将通过 JavaScript 动态生成 -->
+                    </div>
+                </div>
+
+                <!-- 右侧图片上传区 -->
+                <div class="operation-panel">
+                    <div class="panel-section">
+                        <div class="panel-header">
+                            <h3>上传图片</h3>
+                        </div>
+                        <div class="upload-area" id="imageUploadArea">
+                            <div class="upload-placeholder">
+                                <p>拖到区域可以上传图片文件</p>
+                                <p class="upload-hint">支持 JPG/PNG/GIF/WEBP 格式</p>
+                                <input type="file" id="imageFileInput" accept=".jpg,.jpeg,.png,.gif,.webp,.bmp,.svg" style="display: none;" multiple>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="generatedDocumentsTab" class="tab-content">
+            <div class="main-content">
+                <!-- 生成的文档列表 -->
+                <div class="file-list-panel">
+                    <div class="panel-header">
+                        <h3>生成的文档列表</h3>
+                        <div class="header-actions">
+                            <button class="btn btn-small btn-danger" id="clearGeneratedBtn">一键清空</button>
+                        </div>
+                    </div>
+                    <!-- 简化筛选栏 -->
+                    <div class="filter-bar" style="gap: 10px; align-items: center;">
+                        <input type="text" id="generatedKeywordSearch" class="filter-input" style="flex: 1; max-width: 400px;" placeholder="搜索：文件名、模板名、格式、日期（如：test and 2024-12）">
+                        <button class="btn btn-primary" id="generatedFilterBtn">搜索</button>
+                        <button class="btn btn-secondary" id="generatedResetBtn">重置</button>
+                    </div>
+                    <div class="file-list" id="generatedDocumentList">
+                        <!-- 生成的文档列表项将通过 JavaScript 动态生成 -->
+                    </div>
+                    <div class="pagination" id="generatedPagination">
+                        <!-- 翻页按钮将通过 JavaScript 动态生成 -->
+                    </div>
+                </div>
+
+                <!-- 文档详情面板 -->
+                <div class="operation-panel">
+                    <div class="panel-section" id="generatedDetailPanel" style="display: none;">
+                        <div class="panel-header">
+                            <h3>文档详情</h3>
+                        </div>
+                        <div class="detail-content" id="generatedDetailContent">
+                            <!-- 文档详情将通过 JavaScript 动态生成 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 访问日志标签页 -->
+        <div id="accessLogTab" class="tab-content">
+            <div class="main-content">
+                <div class="log-panel">
+                    <div class="panel-header">
+                        <h3>访问日志</h3>
+                        <div class="log-filters">
+                            <button class="btn btn-danger" id="clearLogsBtn">一键清空</button>
+                        </div>
+                    </div>
+                    <div class="log-list" id="logList">
+                        <!-- 访问日志列表将通过 JavaScript 动态生成 -->
+                    </div>
+                    <div class="pagination" id="logPagination">
+                        <!-- 翻页按钮将通过 JavaScript 动态生成 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 分类管理标签页 -->
+        <div id="categoryManagementTab" class="tab-content">
+            <div class="main-content">
+                <!-- 分类列表 -->
+                <div class="file-list-panel" style="width: 100%;">
+                    <div class="panel-header">
+                        <h3>分类列表</h3>
+                        <div class="header-actions">
+                            <button class="btn btn-primary" id="addCategoryBtn" onclick="addCategory()">添加分类</button>
+                        </div>
+                    </div>
+                    <div class="file-list" id="categoryList">
+                        <!-- 分类列表将通过 JavaScript 动态生成 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 用户管理标签页（仅管理员可见） -->
+        <div id="userManagementTab" class="tab-content">
+            <div class="main-content">
+                <div class="file-list-panel">
+                    <div class="panel-header">
+                        <h3>用户列表</h3>
+                        <div class="header-actions">
+                            <button class="btn btn-primary" id="refreshUsersBtn">刷新</button>
+                        </div>
+                    </div>
+                    <div class="file-list" id="userList">
+                        <!-- 用户列表将通过 JavaScript 动态生成 -->
+                    </div>
+                    <div class="pagination" id="userPagination">
+                        <!-- 翻页按钮将通过 JavaScript 动态生成 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 权限设置对话框 -->
+    <div id="permissionsModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3>文档权限设置</h3>
+                <span class="modal-close" onclick="closePermissionsModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>禁止下载的用户（黑名单）：</label>
+                    <div class="tag-input-container">
+                        <input type="text" id="blockedUsersInput" class="form-control" placeholder="输入用户名后按回车添加" onkeypress="handleTagInput(event, 'blockedUsers')">
+                        <div id="blockedUsersTags" class="tags-list"></div>
+                    </div>
+                    <small class="form-text text-muted">输入用户名后按回车键添加，点击标签上的×删除</small>
+                </div>
+                <div class="form-group" style="margin-top: 20px;">
+                    <label>禁止下载的部门（黑名单）：</label>
+                    <div class="tag-input-container">
+                        <input type="text" id="blockedDepartmentsInput" class="form-control" placeholder="输入部门名称后按回车添加" onkeypress="handleTagInput(event, 'blockedDepartments')">
+                        <div id="blockedDepartmentsTags" class="tags-list"></div>
+                    </div>
+                    <small class="form-text text-muted">输入部门名称后按回车键添加，点击标签上的×删除</small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closePermissionsModal()">取消</button>
+                <button class="btn btn-primary" onclick="savePermissions()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 模板类型添加对话框 -->
+    <div id="templateTypeModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3 id="templateTypeModalTitle">添加模板类型</h3>
+                <span class="modal-close" onclick="closeTemplateTypeModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label id="templateTypeModalLabel">类型名称：</label>
+                    <input type="text" id="templateTypeInput" class="form-input" placeholder="请输入类型名称">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeTemplateTypeModal()">取消</button>
+                <button class="btn btn-primary" onclick="saveTemplateType()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="template-types.js"></script>
+    <script src="image-file-association.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

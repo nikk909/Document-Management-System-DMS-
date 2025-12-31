@@ -1,0 +1,34 @@
+{
+  "template_name": "task_progress_report_template",
+  "current_version": 4,
+  "versions": [
+    {
+      "version": 1,
+      "timestamp": "20251122_224320",
+      "file_path": "word\\task_progress_report_template_v1_20251122_224320.docx",
+      "change_log": "鍒涘缓浠诲姟杩涘害鎶ュ憡妯℃澘",
+      "created_at": "2025-11-22 22:43:20"
+    },
+    {
+      "version": 2,
+      "timestamp": "20251122_224324",
+      "file_path": "html\\task_progress_report_template_v2_20251122_224324.html",
+      "change_log": "鍒涘缓浠诲姟杩涘害鎶ュ憡 HTML 妯℃澘",
+      "created_at": "2025-11-22 22:43:24"
+    },
+    {
+      "version": 3,
+      "timestamp": "20251122_224324",
+      "file_path": "pdf\\task_progress_report_template_v3_20251122_224324.html",
+      "change_log": "鍒涘缓浠诲姟杩涘害鎶ュ憡 PDF 妯℃澘",
+      "created_at": "2025-11-22 22:43:24"
+    },
+    {
+      "version": 4,
+      "timestamp": "20251123_125651",
+      "file_path": "html\\task_progress_report_template_v4_20251123_125651.html",
+      "change_log": "从文件 task_progress_report_template.html 上传",
+      "created_at": "2025-11-23 12:56:51"
+    }
+  ]
+}

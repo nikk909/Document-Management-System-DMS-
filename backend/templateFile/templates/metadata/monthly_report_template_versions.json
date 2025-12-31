@@ -1,0 +1,27 @@
+{
+  "template_name": "monthly_report_template",
+  "current_version": 3,
+  "versions": [
+    {
+      "version": 1,
+      "timestamp": "20251123_225531",
+      "file_path": "word\\monthly_report_template_v1_20251123_225531.docx",
+      "change_log": "鏈堝害鎶ヨ〃Word妯℃澘",
+      "created_at": "2025-11-23 22:55:31"
+    },
+    {
+      "version": 2,
+      "timestamp": "20251123_225540",
+      "file_path": "html\\monthly_report_template_v2_20251123_225540.html",
+      "change_log": "鏈堝害鎶ヨ〃HTML妯℃澘",
+      "created_at": "2025-11-23 22:55:40"
+    },
+    {
+      "version": 3,
+      "timestamp": "20251123_225546",
+      "file_path": "pdf\\monthly_report_template_v3_20251123_225546.html",
+      "change_log": "鏈堝害鎶ヨ〃PDF妯℃澘",
+      "created_at": "2025-11-23 22:55:46"
+    }
+  ]
+}

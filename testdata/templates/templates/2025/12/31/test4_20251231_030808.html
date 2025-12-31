@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>员工信息表</title>
+    <style>
+        body { font-family: 'Microsoft YaHei', sans-serif; max-width: 1000px; margin: 0 auto; padding: 20px; }
+        h1 { text-align: center; color: #333; border-bottom: 2px solid #667eea; padding-bottom: 10px; }
+        .info { margin: 20px 0; color: #666; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th { background: #667eea; color: white; padding: 12px; text-align: left; }
+        td { border: 1px solid #ddd; padding: 10px; }
+        tr:nth-child(even) { background: #f8f9fa; }
+        .footer { text-align: center; color: #999; font-size: 12px; margin-top: 30px; }
+    </style>
+</head>
+<body>
+    <h1>员工信息表</h1>
+    <p class="info">生成时间: {{ now.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+    
+    {% if table_data %}
+    <table>
+        <thead>
+            <tr>
+                {% for key in table_data[0].keys() %}
+                <th>{{ key }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in table_data %}
+            <tr>
+                {% for value in row.values() %}
+                <td>{{ value }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+    
+    <div class="footer">本文档由系统自动生成</div>
+</body>
+</html>
+

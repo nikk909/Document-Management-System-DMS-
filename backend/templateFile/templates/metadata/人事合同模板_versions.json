@@ -1,0 +1,13 @@
+{
+  "template_name": "人事合同模板",
+  "current_version": 1,
+  "versions": [
+    {
+      "version": 1,
+      "timestamp": "20251213_190105",
+      "file_path": "pdf\\人事合同模板_v1_20251213_190105.html",
+      "change_log": "初始版本上传",
+      "created_at": "2025-12-13 19:01:05"
+    }
+  ]
+}

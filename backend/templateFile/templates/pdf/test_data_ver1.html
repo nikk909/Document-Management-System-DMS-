@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ store.name }} - 产品报告</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: "SimSun", "宋体", "Microsoft YaHei", Arial, sans-serif;
+            font-size: 12pt;
+            line-height: 1.6;
+            color: #333;
+            padding: 40px;
+            background-color: #fff;
+        }
+        
+        .store-name {
+            font-size: 18pt;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .store-location {
+            font-size: 12pt;
+            margin-bottom: 10px;
+        }
+        
+        .contact-info {
+            font-size: 12pt;
+            margin-bottom: 20px;
+            color: #555;
+        }
+        
+        h4 {
+            font-size: 14pt;
+            font-weight: bold;
+            margin: 20px 0 15px 0;
+            color: #2c3e50;
+        }
+        
+        h5 {
+            font-size: 12pt;
+            font-weight: bold;
+            margin: 15px 0 10px 0;
+            color: #34495e;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 12pt;
+        }
+        
+        table th,
+        table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        
+        table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        
+        table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        
+        li {
+            margin: 5px 0;
+        }
+        
+        .section {
+            margin: 20px 0;
+        }
+        
+        .info-item {
+            margin: 5px 0;
+        }
+        
+        .shipping-info {
+            margin: 5px 0;
+        }
+        
+        hr {
+            border: none;
+            border-top: 1px solid #ddd;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="store-name">{{ store.name }}</div>
+    <div class="store-location">{{ store.location }}</div>
+    <div class="contact-info">联系电话：{{ store.contact.phone }} | 邮箱：{{ store.contact.email }}</div>
+    
+    <h4>产品汇总表</h4>
+    <table>
+        <thead>
+            <tr>
+                <th>产品ID</th>
+                <th>产品名称</th>
+                <th>分类</th>
+                <th>价格</th>
+                <th>库存状态</th>
+                <th>平均评分</th>
+                <th>总评论数</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in store.products %}
+            <tr>
+                <td>{{ product.id }}</td>
+                <td>{{ product.name }}</td>
+                <td>{{ product.category }}</td>
+                <td>{{ product.price }} {{ product.currency }}</td>
+                <td>{% if product.inStock %}有货{% else %}无货{% endif %}</td>
+                <td>{{ product.ratings.average }}</td>
+                <td>{{ product.ratings.totalReviews }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <h4>产品详情</h4>
+    {% for product in store.products %}
+    <div class="section">
+        <h5>{{ product.id }} - {{ product.name }}</h5>
+        
+        <div class="info-item">
+            <strong>基础信息：</strong><br>
+            分类：{{ product.category }} | 价格：{{ product.price }} {{ product.currency }} | 库存：{% if product.inStock %}有货{% else %}无货{% endif %}<br>
+            评分：{{ product.ratings.average }}（{{ product.ratings.totalReviews }}条评论）
+        </div>
+        
+        <div class="info-item">
+            <strong>规格详情：</strong><br>
+            {% if product.details.color %}颜色：{{ product.details.color }}<br>{% endif %}
+            {% if product.details.material %}材质：{{ product.details.material }}<br>{% endif %}
+            尺寸：{{ product.details.dimensions.length }} × {{ product.details.dimensions.width }} × {{ product.details.dimensions.height }} | 重量：{{ product.details.weight }}
+        </div>
+        
+        <div class="info-item">
+            <strong>功能特点：</strong>
+            <ul>
+                {% for feature in product.details.features %}
+                <li>{{ feature }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        
+        <div class="info-item">
+            <strong>变体信息：</strong>
+            <table>
+                <thead>
+                    <tr>
+                        <th>颜色</th>
+                        <th>价格</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for variant in product.variants %}
+                    <tr>
+                        <td>{{ variant.color }}</td>
+                        <td>{{ variant.price }} {{ product.currency }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="info-item">
+            <strong>配送信息：</strong><br>
+            <span class="shipping-info">▶ 标准配送：{{ product.shipping.standard.cost }} {{ product.currency }}（{{ product.shipping.standard.deliveryTime }}）</span><br>
+            <span class="shipping-info">▶ 快递配送：{{ product.shipping.express.cost }} {{ product.currency }}（{{ product.shipping.express.deliveryTime }}）</span>
+        </div>
+        
+        <hr>
+    </div>
+    {% endfor %}
+</body>
+</html>
