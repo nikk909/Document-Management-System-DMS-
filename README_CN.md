@@ -51,6 +51,14 @@
 docker-compose up -d
 ```
 
+**⚠️ 重要**: 在运行初始化脚本之前，需要先创建配置文件：
+
+```bash
+cd backend
+cp config/config.yaml.example config/config.yaml
+# 编辑 config/config.yaml，更新 MySQL 和 MinIO 的账号密码
+```
+
 ### 一键初始化与数据导入
 
 系统提供了一键初始化脚本，可自动创建数据库表、管理员账号并导入示例数据：
@@ -88,6 +96,8 @@ python -m uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ## 文档
 
 ### 中文文档
+- [快速设置指南](docs/SETUP_GUIDE_CN.md) ⭐ **从这里开始**
+- [故障排除指南](docs/TROUBLESHOOTING_CN.md) 🔧
 - [系统架构](docs/ARCHITECTURE_CN.md)
 - [功能指南](docs/FUNCTIONALITY_CN.md)
 - [模板格式说明](docs/模板格式说明.md)
@@ -98,6 +108,7 @@ python -m uvicorn main:app --reload --host 0.0.0.0 --port 8000
 - [推荐模板说明](docs/推荐模板说明.md)
 
 ### English Documentation
+- [Quick Setup Guide](docs/SETUP_GUIDE.md) ⭐ **Start Here**
 - [Architecture Overview](docs/ARCHITECTURE.md)
 - [Functionality Guide](docs/FUNCTIONALITY.md)
 - [Deployment Guide](docs/DEPLOYMENT.md)

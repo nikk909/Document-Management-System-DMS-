@@ -54,6 +54,14 @@ A comprehensive document management and generation system built with FastAPI, Mi
 docker-compose up -d
 ```
 
+**⚠️ Important**: Before running the bootstrap script, you need to create the configuration file:
+
+```bash
+cd backend
+cp config/config.yaml.example config/config.yaml
+# Edit config/config.yaml and update MySQL and MinIO credentials
+```
+
 ### One-Click Initialization & Data Import
 
 The system provides a bootstrap script to automatically create database tables, an admin account, and import sample data:
@@ -92,6 +100,8 @@ Open `frontend/index.html` in your browser.
 
 ### English
 
+- [Quick Setup Guide](docs/SETUP_GUIDE.md) ⭐ **Start Here**
+- [Troubleshooting Guide](docs/TROUBLESHOOTING.md) 🔧
 - [Architecture Overview](docs/ARCHITECTURE.md)
 - [Functionality Guide](docs/FUNCTIONALITY.md)
 - [Template Format Specification](docs/模板格式说明.md)
@@ -102,6 +112,7 @@ Open `frontend/index.html` in your browser.
 
 ### 中文
 
+- [快速设置指南](docs/SETUP_GUIDE_CN.md) ⭐ **从这里开始**
 - [系统架构](docs/ARCHITECTURE_CN.md)
 - [功能指南](docs/FUNCTIONALITY_CN.md)
 - [模板格式说明](docs/模板格式说明.md)

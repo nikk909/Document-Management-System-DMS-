@@ -1,0 +1,73 @@
+# 系统配置文件示例
+# 复制此文件为 config.yaml 并修改为实际配置值
+# 注意：config.yaml 包含敏感信息，已在 .gitignore 中排除，不会提交到版本控制系统
+
+# ==================== 路径配置 ====================
+paths:
+  input_dir: "templateFile/input"
+  output_dir: "templateFile/output"
+  template_dir: "templateFile/templates"
+  log_dir: "templateFile/output/log"
+
+# ==================== MySQL 数据库配置 ====================
+mysql:
+  host: "127.0.0.1"              # 数据库主机地址
+  port: 3306                      # 数据库端口（默认 3306）
+  user: "root"                    # 数据库用户名
+  password: "your_password_here"  # 数据库密码（请修改为实际密码）
+  database: "file_management"     # 数据库名称
+  charset: "utf8mb4"              # 字符集
+  pool_size: 5                    # 连接池大小
+  max_overflow: 10                 # 最大溢出连接数
+  pool_timeout: 30                 # 连接池超时时间（秒）
+  pool_recycle: 3600              # 连接回收时间（秒）
+
+# ==================== MinIO 对象存储配置 ====================
+minio:
+  endpoint: "localhost:9000"      # MinIO 服务端点
+  access_key: "minioadmin"         # MinIO 访问密钥（默认 minioadmin）
+  secret_key: "minioadmin"        # MinIO 秘密密钥（默认 minioadmin，生产环境请修改）
+  secure: false                    # 是否使用 HTTPS（本地测试用 false，生产环境建议 true）
+  buckets:
+    documents: "documents"              # 文档存储桶
+    templates: "templates"              # 模板存储桶
+    generated_documents: "generated-documents"  # 生成的文档存储桶
+    logs: "logs"                        # 日志存储桶
+    images: "images"                    # 图片存储桶
+  default_bucket: "documents"     # 默认存储桶
+  versioned_bucket: "versioned-docs"  # 版本控制存储桶
+
+# ==================== 导出配置 ====================
+export:
+  default_format: "word"           # 默认导出格式：word/pdf/html
+  max_parallel_tasks: 4            # 批量导出最大并行任务数
+  chunk_size: 1024                 # 大文件分块大小（KB）
+
+# ==================== 模板配置 ====================
+template:
+  default_version: "latest"         # 默认使用最新版本
+  auto_increment_version: true      # 上传新模板时自动递增版本号
+
+# ==================== 校验配置 ====================
+validation:
+  check_links: false                # 是否检查文档内链接有效性
+  strict_mode: false                 # 严格模式：任何错误都导致导出失败
+
+# ==================== 存储配置 ====================
+storage:
+  enabled: true                     # 是否启用存储功能
+  auto_store: true                  # 生成后自动存储
+  default_category: "未分类"        # 默认分类
+
+# ==================== 日志配置 ====================
+logging:
+  level: "INFO"                     # 日志级别：DEBUG/INFO/WARNING/ERROR
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+# ==================== JWT 认证配置 ====================
+# 注意：JWT 密钥在 main.py 中配置，生产环境请修改 SECRET_KEY
+# auth:
+#   secret_key: "your-secret-key-change-in-production"  # JWT 密钥
+#   algorithm: "HS256"                                    # 加密算法
+#   expire_hours: 24                                      # Token 过期时间（小时）
+

@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  # MySQL 数据库服务
+  mysql:
+    image: mysql:5.7
+    container_name: dms-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root          # 请修改为实际密码
+      MYSQL_DATABASE: file_management    # 数据库名称
+      MYSQL_CHARACTER_SET_SERVER: utf8mb4
+      MYSQL_COLLATION_SERVER: utf8mb4_unicode_ci
+    ports:
+      - "3306:3306"                      # 主机端口:容器端口
+    volumes:
+      - mysql_data:/var/lib/mysql        # 数据持久化
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # MinIO 对象存储服务
+  minio:
+    image: minio/minio:latest
+    container_name: dms-minio
+    restart: always
+    environment:
+      MINIO_ROOT_USER: minioadmin         # MinIO 访问密钥（请修改为实际值）
+      MINIO_ROOT_PASSWORD: minioadmin     # MinIO 秘密密钥（请修改为实际值）
+    ports:
+      - "9000:9000"                       # MinIO API 端口
+      - "9001:9001"                       # MinIO 控制台端口
+    volumes:
+      - minio_data:/data                  # MinIO 数据持久化
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+volumes:
+  mysql_data:
+    driver: local
+  minio_data:
+    driver: local
+
